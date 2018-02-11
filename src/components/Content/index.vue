@@ -311,8 +311,8 @@ export default {
 				this.selectedRes.forEach(item => {
 					if (this.slider_value >= item.minOrderAmount) {
 						this.filteredRes.push(item);
-						this.filtredAndChecked.push(item);
 					}
+					this.filteredRes = []
 				})
 			}
 		}

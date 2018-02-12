@@ -22,7 +22,7 @@ export default {
 </script>
 
 <style lang="sass" >
-@import url('https://fonts.googleapis.com/css?family=Lobster&subset=cyrillic,cyrillic-ext');
+@import url('https://fonts.googleapis.com/css?family=Lobster&subset=cyrillic,cyrillic-ext')
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800&subset=cyrillic,cyrillic-ext')
 body
   margin: 0

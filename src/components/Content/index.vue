@@ -146,7 +146,6 @@
 						Минимальная сумма заказа до <input v-model.number="slider_value" type="number"> тг.
 					</span>
 					<vue-slider class="slider-tool" v-bind="slider_options" ref="slider" v-model="slider_value" />
-
 					<hr>
 
 					<div class="local-salary">
@@ -176,13 +175,13 @@
 							<option value="Караганда">Караганда</option>
 						</select>
 						<div class="buttons-group">
-							<a class="is-activ" href="#">Все</a>
-							<a href="#">Открытые</a>
+							<a @click="isOpen = false" :class="{'is-active': !isOpen}">Все</a>
+							<a :class="{'is-active': isOpen}" type="button" @click="isOpen = true">Открытые</a>
 						</div>
 					</div>
 					<div class="right-content-main">
 						<div class="card-wrapper">
-							<div :key="index" v-for="(item, index) in filteredRestaurants()" class="card">
+							<div :key="index" v-for="(item, index) in filtredRes" class="card">
 								<div class="img">
 									<img :src="item.img" :alt="item.name">
 								</div>
@@ -230,7 +229,7 @@
 									</div>
 								</div>
 							</div>
-							<h1 v-show="!selectedRes.length && selectedCategory.length" >Ничего не найдено!</h1>
+							<h1 v-show="(selectedCategory.length && !filtredRes.length) || !filtredRes.length" >Ничего не найдено</h1>
 						</div>
 					</div>
 				</div>
@@ -248,73 +247,39 @@ export default {
 	components: {
 		vueSlider
 	},
-	created() {
-		firebase.database().ref('emenu-restaurants').once('value')
-			.then(data => {
-				this.dataRes = mapToArray(data.val());
-			})
-	},
-	methods: {
-		filteredRestaurants() {
-			if (!this.filteredRes.length && !this.selectedRes.length) {
-				console.log('all')
-				return this.dataRes;
-			} else if (this.selectedCategory.length && this.filteredRes.length) {
-				console.log('filter and selected')
-				return this.filtredAndChecked;
-			} else if (this.filteredRes.length) {
-				console.log('slider')
-				return this.filteredRes;
-			} else if (this.selectedCategory.length) {
-				console.log('checkbox')
-				return this.selectedRes;
-			}
-		}
-	},
 	data() {
 		return {
-			selectedRes: [],
+			isOpen: false,
 			selectedCategory: [],
-			filteredRes: [],
-			filtredAndChecked: [],
 			dataRes: [],
 			slider_value: 5000,
 			slider_options: {
 				max: 5000,
 				height: "10",
 				interval: 100,
-				tooltip: "never",
-				lazy: true
+				tooltip: "never"
 			}
 		}
 	},
-	watch: {
-		selectedCategory() {
-			this.selectedRes = []
-			this.dataRes.forEach(item => {
-				for (let i = 0; i < this.selectedCategory.length; i++) {
-					const curr = this.selectedCategory[i];
-					if (item.category.includes(curr)) return this.selectedRes.push(item);
+	created() {
+		firebase.database().ref('emenu-restaurants').once('value')
+			.then(data => {
+				this.dataRes = mapToArray(data.val());
+			})
+	},
+	computed: {
+		filtredRes() {
+			return this.dataRes.filter(res => {
+				if (this.slider_value >= res.minOrderAmount && !this.selectedCategory.length) {
+					return !this.isOpen ? res : res.isOpened;
+				} else {
+					for (let i = 0; i < this.selectedCategory.length; i++) {
+						if (res.category.includes(this.selectedCategory[i]) && this.slider_value >= res.minOrderAmount) {
+							return !this.isOpen ? res : res.isOpened;
+						}
+					}
 				}
 			})
-		},
-		slider_value() {
-			console.log(this.filteredRestaurants())
-			this.filteredRes = []
-			if (!this.selectedRes.length) {
-				this.dataRes.forEach(item => {
-					if (this.slider_value >= item.minOrderAmount) {
-						this.filteredRes.push(item);
-					}
-				})
-			} else {
-				this.selectedRes.forEach(item => {
-					if (this.slider_value >= item.minOrderAmount) {
-						this.filteredRes.push(item);
-					}
-					this.filteredRes = []
-				})
-			}
 		}
 	}
 }
@@ -358,6 +323,7 @@ export default {
 			display: inline-flex
 			box-shadow: 0 1px 3px rgba(0,0,0,0.3)
 			a
+				cursor: pointer
 				background: white
 				padding: 5px 10px
 				text-transform: uppercase
@@ -436,6 +402,7 @@ export default {
 				box-shadow: 0 1px 1px rgba(0,0,0,0.1)
 				a
 					margin-left: -1px
+					cursor: pointer
 					background-color: #ffffff
 					padding: 5px 17px
 					border: solid 1px #ced3d5
@@ -445,7 +412,7 @@ export default {
 					transition: .2s ease
 					&:hover
 						background-color: #EBEBEB
-					&.is-activ
+					&.is-active
 						background-color: #EBEBEB
 						box-shadow: inset 0 1px 10px rgba(0,0,0,0.1)
 

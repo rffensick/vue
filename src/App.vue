@@ -22,27 +22,18 @@ export default {
 </script>
 
 <style lang="sass" >
+@import './assets/sass/main'
 @import url('https://fonts.googleapis.com/css?family=Lobster&subset=cyrillic,cyrillic-ext')
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700,800&subset=cyrillic,cyrillic-ext')
 body
-  margin: 0
-  padding: 0
   font-family: 'Open Sans', sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  height: 100%
   background:
     image: url('./assets/body-fon.jpg')
     position: top center
     repeat: no-repeat
     color: #dedad6
-
-img
-  width: 100%
-  height: auto
-
 .container
-  width: 970px
-  margin: 0 auto
-
+  +container-fluid
 </style>

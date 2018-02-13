@@ -4,7 +4,7 @@
 			<div class="header-content" >
 				<div class="header-brand">
 					<a class="link-brand" href="#">
-						<img src="@/assets/emenu-logo.png" alt="">
+						<img class="img-responsive" src="@/assets/emenu-logo.png" alt="">
 					</a>
 				</div>
 				<div class="header-choose__city">
@@ -30,9 +30,7 @@
 	}
 </script>
 
-
 <style lang="sass">
-
 .header
 	background-color: #434343
 	color: white
@@ -140,5 +138,15 @@
 			transition: .2s ease
 			&:hover
 				box-shadow: inset 0 -15px 25px darken(rgba(97,178,18,1), 10%)
+
+// Mobile styles
+@media (max-width: 765px)
+	.header-content
+		padding: 0 20px
+		min-height: 50px
+		.header-brand
+			margin-right: 10px
+	.header-steps
+		display: none
 </style>
 

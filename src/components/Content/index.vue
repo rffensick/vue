@@ -146,6 +146,8 @@
 						Минимальная сумма заказа до <input v-model.number="slider_value" type="number"> тг.
 					</span>
 					<vue-slider class="slider-tool" v-bind="slider_options" ref="slider" v-model="slider_value" />
+					<p class="price-sidebar" >Максимальная цена : {{ maxPrice == -Infinity ? 'Загрузка' : maxPrice }} </p>
+					<p class="price-sidebar" >Минимальная цена : {{ minPrice == Infinity ? 'Загрузка' : minPrice }} </p>
 					<hr>
 
 					<div class="local-salary">
@@ -182,6 +184,8 @@
 					<div class="right-content-main">
 						<div class="card-wrapper">
 							<div :key="index" v-for="(item, index) in filtredRes" class="card">
+								<div v-if="item.isOpened" class="status">Открыто</div>
+								<div v-else class="status status-close" >Закрыто</div>
 								<div class="img">
 									<img :src="item.img" :alt="item.name">
 								</div>
@@ -208,28 +212,13 @@
 											</li>
 										</ul>
 										<div class="more-info">
-											<!-- <p>ПРИЕМ ЗАКАЗОВ: С 11.00 ДО 00.00.</p>
-											<p>Доставка осуществляется в районы: город, Юго-восток, Михайловка, Майкудук: доставка - 300 тг, БЕСПЛАТНО от 2500 тг;</p>
-											<p>Кунгей: мин. заказ - от 2500 тг, доставка - 500 тг.</p>
-											
-											<span>Минимальный заказ:</span>
-											<ul>
-												<li>
-													- понедельник-четверг с 11:00 до 16:00 от 990 тг.,
-												</li>
-												<li>
-													- понедельник-четверг с 16:00 до 24:00 от 1490 тг.,
-												</li>
-												<li>
-													- по пятницам, субботам и воскресеньям, а также по праздникам от 2500 тг.
-												</li>
-											</ul> -->
 											{{item.shortInfo.info}}
 										</div>
 									</div>
 								</div>
 							</div>
-							<h1 v-show="(selectedCategory.length && !filtredRes.length) || !filtredRes.length" >Ничего не найдено</h1>
+							<h1 v-show="!dataRes.length">Загрузка...</h1>
+							<h1 v-if="dataRes.length && !filtredRes.length"> Ничего не найдено </h1>
 						</div>
 					</div>
 				</div>
@@ -280,12 +269,27 @@ export default {
 					}
 				}
 			})
-		}
+		},
+		minPrice() {
+			const prices = [];
+			this.dataRes.forEach(res => {
+				prices.push(res.minOrderAmount);
+			})
+			return Math.min(...prices);
+		},
+		maxPrice() {
+			const prices = [];
+			this.dataRes.forEach(res => {
+				prices.push(res.minOrderAmount);
+			})
+			return Math.max(...prices);
+		},
 	}
 }
 </script>
 
 <style lang="sass">
+@import '../../assets/sass/vars'
 .content
 	&-breadcrumbs
 		display: flex
@@ -422,6 +426,7 @@ export default {
 				display: flex
 				flex-wrap: wrap
 				.card
+					position: relative
 					padding: 10px 20px
 					background-color: #fff
 					display: flex
@@ -431,9 +436,35 @@ export default {
 					&:not(last-child)
 						margin-bottom: 20px
 					.img
+						margin-right: 10px
 						img
 							width: 100px
 							height: 100px
+					.status
+						position: absolute
+						top: 5px
+						font-size: 13.5px
+						left: calc(100% + 16px)
+						background-color: #00B4AC
+						text-align-last: left
+						transform: translateX(-100%)
+						color: #fff
+						font-weight: bold
+						padding: 5px 28px 5px 14px
+						border-radius: 3px 0 0 3px
+						border-color: #00B4AC
+						&:after
+							content: ''
+							position: absolute
+							top: 100%
+							right: 0
+							border-style: solid
+							border-width: 16px 16px 0 0
+							border-color: transparent
+							border-top-color: inherit
+						&-close
+							background-color: #DA2828
+							border-color: #DA2828
 					.top-info
 						margin-left: 10px
 						.top-title
@@ -477,4 +508,34 @@ export default {
 								margin: 0
 								padding: 0
 								list-style-type: none
+
+.price-sidebar
+	margin: 5px 0
+	font-size: 15px
+	color: #777
+	font-style: italic
+
+@media (max-width: 765px)
+	.sidebar
+		display: none
+
+	.content .right-content-main .card-wrapper .card
+		display: block
+
+	.content .right-content-main .card-wrapper .card .img img
+		width: 100px
+		height: auto
+
+	.content .right-content-main .card-wrapper .card .bot-info
+		margin-top: 20px
+
+	.content .right-content-main .card-wrapper .card .top-info .category
+		width: 88%
+		+clearfix
+	
+	.content .right-content-main .card-wrapper .card .bot-info-list
+		margin: 1px
+
+	.content .right-content-main .card-wrapper .card .img
+		float: left
 </style>

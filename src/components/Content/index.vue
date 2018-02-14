@@ -165,7 +165,7 @@
 						<span>Критерии:</span>
 						<ul>
 							<li><label><input type="checkbox">Новые</label></li>
-							<li><label><input type="checkbox">С акциями</label></li>
+							<li><label><input v-model.number="selectedCategory" name="40" value="40" type="checkbox">С акциями</label></li>
 						</ul>
 					</div>
 
@@ -186,6 +186,7 @@
 							<div :key="index" v-for="(item, index) in filtredRes" class="card">
 								<div v-if="item.isOpened" class="status">Открыто</div>
 								<div v-else class="status status-close" >Закрыто</div>
+								<div v-if="item.category.includes(40)" class="status status-stock">Акция!</div>
 								<div class="img">
 									<img :src="item.img" :alt="item.name">
 								</div>
@@ -259,14 +260,11 @@ export default {
 	computed: {
 		filtredRes() {
 			return this.dataRes.filter(res => {
-				if (this.slider_value >= res.minOrderAmount && !this.selectedCategory.length) {
+				if (this.slider_value >= res.minOrderAmount && !this.selectedCategory.length)
 					return !this.isOpen ? res : res.isOpened;
-				} else {
-					for (let i = 0; i < this.selectedCategory.length; i++) {
-						if (res.category.includes(this.selectedCategory[i]) && this.slider_value >= res.minOrderAmount) {
-							return !this.isOpen ? res : res.isOpened;
-						}
-					}
+				for (let i = 0; i < this.selectedCategory.length; i++) {
+					if (res.category.includes(this.selectedCategory[i]) && this.slider_value >= res.minOrderAmount) 
+						return !this.isOpen ? res : res.isOpened
 				}
 			})
 		},
@@ -465,6 +463,10 @@ export default {
 						&-close
 							background-color: #DA2828
 							border-color: #DA2828
+						&-stock
+							background-color: #2385CE
+							border-color: #2385CE
+							top: 50px
 					.top-info
 						margin-left: 10px
 						.top-title
